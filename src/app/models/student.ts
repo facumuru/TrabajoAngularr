@@ -2,7 +2,7 @@
 export class Student{ 
     
     id:number 
-    dni:string
+    dni:number
     lastName:string
     firstName:string
     email:string

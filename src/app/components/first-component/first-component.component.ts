@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TestServiceService } from 'src/app/services/test-service.service';
 import { Student } from 'src/app/models/student';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, NgModel } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'componente-tabla',
@@ -15,13 +16,13 @@ export class FirstComponentComponent implements OnInit {
 
   studentsList = new Array<Student>;
 
-  id2: string;
-  dni2: string;
-  nombre2: string;
-  apellido2: string;
+  id2: number;
+  document2: number;
+  name2: string;
+  lastName2: string;
   email2: string;
 
-  constructor(private studentService: TestServiceService) {}
+  constructor(private studentService: TestServiceService, private ngbModalService:NgbModal) {}
 
   ngOnInit() {
     this.studentForm = new FormGroup({
@@ -65,6 +66,52 @@ export class FirstComponentComponent implements OnInit {
       document.getElementsByTagName('input')[0].focus();
     });
   }
+  delete(id: number){
+
+    this.studentService.delete(id).subscribe(() => { 
+      location.reload()
+      }, error => {
+        console.error(error);
+        alert('Error: ' + error.error.message)
+        document.getElementsByTagName('input')[0].focus()
+    })
+
+  }
+  modify(ver: any, s: Student) {
+    this.id2 = s.id
+    this.document2 = s.dni
+    this.lastName2 = s.lastName
+    this.name2 = s.firstName
+    this.email2 = s.email
+    this.document2 = s.dni
+    this.lastName2 = s.lastName
+    this.name2 = s.firstName
+    this.email2 = s.email
+    this.ngbModalService.open(ver).result.then(() => {
+      {
+        let student = new Student()
+        student.id = this.id2
+        student.dni = this.document2
+        student.lastName = this.lastName2
+        student.firstName = this.name2
+        student.email = this.email2
+        student.cohort = 0
+        student.status = 'activo'
+        student.gender = 'masculino'
+        student.address = 'abc123'
+        student.phone = '000'
+        this.studentService.alter(student).subscribe(() => {
+          location.reload()
+        }, error => {
+          console.error(error)
+          alert('Error: ' + error.error.message)
+        })
+      }
+    }, reason => { })
+  }
+
+
+
 }
 
 
